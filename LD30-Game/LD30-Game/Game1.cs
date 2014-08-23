@@ -18,6 +18,7 @@ namespace LD30_Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        public GameState CurrentState;
 
         public Game1()
         {
@@ -33,7 +34,7 @@ namespace LD30_Game
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            CurrentState = new MenuState(this, new Rectangle(0,0,this.graphics.PreferredBackBufferWidth,this.graphics.PreferredBackBufferHeight));
 
             base.Initialize();
         }
@@ -46,8 +47,6 @@ namespace LD30_Game
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -56,7 +55,7 @@ namespace LD30_Game
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            Content.Unload();
         }
 
         /// <summary>
@@ -70,7 +69,7 @@ namespace LD30_Game
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            CurrentState.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -81,9 +80,7 @@ namespace LD30_Game
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
+            CurrentState.Draw(gameTime, spriteBatch);
 
             base.Draw(gameTime);
         }
