@@ -37,10 +37,7 @@ namespace LD30_Game
 
         protected override void Initialize()
         {
-<<<<<<< HEAD
-=======
             CurrentState = new MenuState(this, new Rectangle(0,0,this.graphics.PreferredBackBufferWidth,this.graphics.PreferredBackBufferHeight));
->>>>>>> origin/master
 
             testRoom = new testRoom();
             base.Initialize();
@@ -49,19 +46,11 @@ namespace LD30_Game
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
         }
 
         protected override void UnloadContent()
         {
-<<<<<<< HEAD
-           
-=======
             Content.Unload();
->>>>>>> origin/master
         }
         bool Switch = true;
         protected override void Update(GameTime gameTime)
@@ -78,26 +67,19 @@ namespace LD30_Game
                 Switch = false;
             }
             if (Keyboard.GetState().IsKeyUp(Keys.R)) Switch = true;
-
-<<<<<<< HEAD
             testRoom.Update();
             
-=======
             CurrentState.Update(gameTime);
->>>>>>> origin/master
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-<<<<<<< HEAD
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             Drawhandler.Update(spriteBatch);
-=======
             CurrentState.Draw(gameTime, spriteBatch);
->>>>>>> origin/master
 
             base.Draw(gameTime);
         }

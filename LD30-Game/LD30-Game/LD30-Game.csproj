@@ -72,6 +72,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Button.cs" />
     <Compile Include="Cuboid.cs" />
     <Compile Include="data.cs" />
     <Compile Include="Drawhandler.cs" />
