@@ -17,12 +17,18 @@ namespace LD30_Game
         int selection = 0;
         float soundVol = 1;
 
-        Button testButton;
+        KeyboardState prevKeyboard;
+
+        List<Button> ButtonList = new List<Button>();
+        Slider slider;
+
+        SpriteFont menuFont;
 
         public MenuState(Game1 game, Rectangle viewport)
             : base(game, viewport)
         {
             game.IsMouseVisible = true;
+            prevKeyboard = Keyboard.GetState();
         }
 
         public override void Initialize()
@@ -33,36 +39,101 @@ namespace LD30_Game
 
         public override void LoadContent(ContentManager Content)
         {
-            testButton = new Button(Content.Load<Texture2D>("testButton"), Content.Load<SpriteFont>("Menu"), new Vector2(Viewport.Width / 2, Viewport.Height / 2), "PLAY");
+            menuFont = Content.Load<SpriteFont>("Menu");
+            
+            ButtonList.Add(new Button(Content.Load<Texture2D>("testButton"), menuFont, new Vector2(Viewport.Width / 2, Viewport.Height / 2), "PLAY"));
+            ButtonList.Add(new Button(Content.Load<Texture2D>("testButton"), menuFont, new Vector2(Viewport.Width / 2, Viewport.Height / 2 + 80), "EXIT"));
+            slider = new Slider(Content.Load<Texture2D>("sliderGraph"), Content.Load<Texture2D>("sliderBar"), new Vector2(Viewport.Width / 2, Viewport.Height / 2 + 160));
             base.LoadContent(Content);
         }
 
         public override void Update(GameTime gameTime)
         {
             MouseState mouse = Mouse.GetState();
+            KeyboardState keyboard = Keyboard.GetState();
             
             //To switch states, you change the value of CurrentState from Game. 
             //Game1 was passed in as a reference so the change should take effect before the next update call.
-            if (testButton.State == "Pressed" && mouse.LeftButton == ButtonState.Released)
+            if (prevKeyboard.IsKeyUp(Keys.Up) && keyboard.IsKeyDown(Keys.Up))
             {
-                game.CurrentState = new GameplayState(game, Viewport);
+                selection--;
+            }
+            if (prevKeyboard.IsKeyUp(Keys.Down) && keyboard.IsKeyDown(Keys.Down))
+            {
+                selection++;
             }
 
-            if (testButton.BoundingBox.Intersects(new Rectangle(mouse.X, mouse.Y, 1, 1)))
+            if (selection > 1)
+                selection -= 2;
+            else if (selection < 0)
+                selection += 2;
+
+            for (int i = 0; i < ButtonList.Count; i++)
             {
-                if (mouse.LeftButton == ButtonState.Pressed)
+                if (ButtonList[i].BoundingBox.Intersects(new Rectangle(mouse.X, mouse.Y, 1, 1)))
                 {
-                    testButton.SetStatePressed();
+                    selection = i;
+
+                    if (ButtonList[i].State == "Over" && mouse.LeftButton == ButtonState.Pressed)
+                    {
+                        ButtonList[i].SetStatePressed();
+                    }
+                    else if (ButtonList[i].State == "Pressed" && mouse.LeftButton == ButtonState.Released)
+                    {
+                        if (selection == 0)
+                        {
+                            game.CurrentState = new GameplayState(game, Viewport);
+                        }
+                        else
+                        {
+                            game.Exit();
+                        }
+                    }
+                }
+
+                if (selection == i)
+                {
+                    if (ButtonList[i].State == "Pressed")
+                    {
+                        if (keyboard.IsKeyUp(Keys.Enter))
+                        {
+                            if (selection == 0)
+                            {
+                                game.CurrentState = new GameplayState(game, Viewport);
+                            }
+                            else
+                            {
+                                game.Exit();
+                            }
+                        }
+                    }
+                    else if (ButtonList[i].State == "Over")
+                    {
+                        if (keyboard.IsKeyDown(Keys.Enter))
+                        {
+                            ButtonList[i].SetStatePressed();
+                        }
+                    }
+                    else
+                    {
+                        ButtonList[i].SetStateOver();
+                    }
                 }
                 else
                 {
-                    testButton.SetStateOver();
+                    ButtonList[i].SetStateNone();
                 }
             }
-            else
+
+            if (slider.SliderBox.Intersects(new Rectangle(mouse.X, mouse.Y, 1, 1)) && 
+                mouse.LeftButton == ButtonState.Pressed)
             {
-                testButton.SetStateNone();
+                slider.BarX = mouse.X;
             }
+
+            soundVol = (float)Math.Round(slider.BarLevel, 2);
+
+            prevKeyboard = keyboard;
 
             base.Update(gameTime);
         }
@@ -72,7 +143,14 @@ namespace LD30_Game
             game.GraphicsDevice.Clear(Color.Red);
 
             spriteBatch.Begin();
-            testButton.Draw(spriteBatch);
+            foreach (Button b in ButtonList)
+            {
+                b.Draw(spriteBatch);
+            }
+            slider.Draw(spriteBatch);
+
+            float volWidth = menuFont.MeasureString("Volume: " + soundVol).X;
+            spriteBatch.DrawString(menuFont, "Volume: " + soundVol, new Vector2(Viewport.Width / 2 - volWidth/2, Viewport.Height / 2 + 240), Color.White);
             spriteBatch.End();
             base.Draw(gameTime, spriteBatch);
         }
