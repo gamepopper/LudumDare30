@@ -27,7 +27,7 @@ namespace LD30_Game
         {
             get
             {
-                return Math.Abs((Position.X - graphTex.Width/2) - BarX) / graphTex.Width;
+                return (float)Math.Round(Math.Abs((Position.X - graphTex.Width/2) - BarX) / graphTex.Width, 2);
             }
         }
         Texture2D graphTex;

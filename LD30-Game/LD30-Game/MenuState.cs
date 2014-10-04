@@ -131,7 +131,7 @@ namespace LD30_Game
                 slider.BarX = mouse.X;
             }
 
-            soundVol = (float)Math.Round(slider.BarLevel, 2);
+            soundVol = slider.BarLevel;
 
             prevKeyboard = keyboard;
 
